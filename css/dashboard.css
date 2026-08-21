@@ -374,6 +374,154 @@
 
 }
 
+/* ========================================
+   Sector Explorer
+======================================== */
+
+.sector-explorer {
+
+    margin-bottom:
+        var(--space-xl);
+
+}
+
+
+.section-heading {
+
+    margin-bottom:
+        var(--space-lg);
+
+}
+
+
+.section-heading h2 {
+
+    margin-bottom:
+        var(--space-xs);
+
+}
+
+
+.section-heading p {
+
+    margin:
+        0;
+
+}
+
+
+/* ===== Sector Grid ===== */
+
+.sector-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(180px, 1fr)
+        );
+
+    gap:
+        var(--space-md);
+
+}
+
+
+/* ===== Sector Card ===== */
+
+.sector-card {
+
+    width: 100%;
+
+    padding:
+        var(--space-lg);
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        var(--radius-md);
+
+    background:
+        var(--surface);
+
+    color:
+        var(--text-primary);
+
+    text-align:
+        left;
+
+    box-shadow:
+        var(--shadow-sm);
+
+    cursor:
+        pointer;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+.sector-card:hover {
+
+    transform:
+        translateY(-2px);
+
+    border-color:
+        var(--primary);
+
+    box-shadow:
+        var(--shadow-md);
+
+}
+
+
+.sector-card.active {
+
+    border-color:
+        var(--primary);
+
+    box-shadow:
+        0 0 0 2px
+        rgba(15, 118, 110, 0.12);
+
+}
+
+
+/* ===== Sector Name ===== */
+
+.sector-card-name {
+
+    display:
+        block;
+
+    margin-bottom:
+        var(--space-sm);
+
+    font-weight:
+        700;
+
+}
+
+
+/* ===== Company Count ===== */
+
+.sector-card-count {
+
+    color:
+        var(--text-secondary);
+
+    font-size:
+        0.875rem;
+
+}
+
 
 /* ===== Responsive ===== */
 
@@ -441,5 +589,26 @@
             0.875rem;
 
     }
+
+  /* ===== Back Navigation ===== */
+
+.back-link {
+
+    display: inline-block;
+
+    margin-bottom: var(--space-lg);
+
+    color: var(--primary);
+
+    font-weight: 600;
+
+}
+
+
+.back-link:hover {
+
+    text-decoration: underline;
+
+}
 
 }

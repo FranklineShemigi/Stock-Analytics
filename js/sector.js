@@ -1,6 +1,6 @@
 // ========================================
 // NSE Market Analytics
-// Main Application
+// Sector Page
 // ========================================
 
 
@@ -10,20 +10,65 @@ let prices = [];
 
 let currentPeriod = "1M";
 
+let selectedSector = "";
+
 
 // ========================================
-// Load Market Data
+// Get Sector From URL
 // ========================================
 
-async function loadData() {
+function getSectorFromURL() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    return params.get("sector");
+
+}
+
+
+// ========================================
+// Load Sector Data
+// ========================================
+
+async function loadSectorData() {
 
     try {
 
+        // Get selected sector
+
+        selectedSector =
+            getSectorFromURL();
+
+
+        if (!selectedSector) {
+
+            showSectorError(
+                "No sector was selected."
+            );
+
+            return;
+
+        }
+
+
+        // Load companies
+
         const companiesResponse =
-            await fetch("data/companies.json");
+            await fetch(
+                "data/companies.json"
+            );
+
+
+        // Load prices
 
         const pricesResponse =
-            await fetch("data/prices.json");
+            await fetch(
+                "data/prices.json"
+            );
 
 
         if (!companiesResponse.ok) {
@@ -47,51 +92,32 @@ async function loadData() {
         companies =
             await companiesResponse.json();
 
+
         prices =
             await pricesResponse.json();
 
 
-        // Build sector explorer
+        // Display sector name
 
-        populateSectorExplorer();
+        displaySectorHeader();
 
 
-        // Build initial dashboard
+        // Display sector companies
 
-        updateDashboard();
+        updateSectorPage();
 
 
     } catch (error) {
 
         console.error(
-            "Error loading market data:",
+            "Sector loading error:",
             error
         );
 
 
-        const table =
-            document.getElementById(
-                "rankingTable"
-            );
-
-
-        if (table) {
-
-            table.innerHTML = `
-
-                <tr>
-
-                    <td colspan="7">
-
-                        Unable to load market data.
-
-                    </td>
-
-                </tr>
-
-            `;
-
-        }
+        showSectorError(
+            "Unable to load sector data."
+        );
 
     }
 
@@ -99,169 +125,73 @@ async function loadData() {
 
 
 // ========================================
-// Get Unique Sectors
+// Display Sector Header
 // ========================================
 
-function getSectors() {
+function displaySectorHeader() {
 
-    return [
-        ...new Set(
-            companies.map(
-                company =>
-                    company.sector
-            )
-        )
-    ].sort();
-
-}
-
-
-// ========================================
-// Sector Explorer
-// ========================================
-
-function populateSectorExplorer() {
-
-    const sectorGrid =
+    const sectorName =
         document.getElementById(
-            "sectorGrid"
+            "sectorName"
         );
 
 
-    if (!sectorGrid) {
+    const description =
+        document.getElementById(
+            "sectorDescription"
+        );
 
-        return;
+
+    if (sectorName) {
+
+        sectorName.textContent =
+            selectedSector;
 
     }
 
 
-    sectorGrid.innerHTML = "";
+    if (description) {
+
+        description.textContent =
+            `Companies listed under the ${selectedSector} sector.`;
+
+    }
 
 
-    // ===== All Companies =====
+    document.title =
+        `${selectedSector} | NSE Market Analytics`;
 
-    const allCard =
-        createSectorCard(
-            "all",
-            "All Companies",
-            companies.length
-        );
+}
 
 
-    sectorGrid.appendChild(
-        allCard
-    );
+// ========================================
+// Get Companies In Sector
+// ========================================
 
+function getSectorCompanies() {
 
-    // ===== Individual Sectors =====
-
-    const sectors =
-        getSectors();
-
-
-    sectors.forEach(
-        sector => {
-
-            const count =
-                companies.filter(
-                    company =>
-                        company.sector ===
-                        sector
-                ).length;
-
-
-            const card =
-                createSectorCard(
-                    sector,
-                    sector,
-                    count
-                );
-
-
-            sectorGrid.appendChild(
-                card
-            );
-
-        }
+    return companies.filter(
+        company =>
+            company.sector ===
+            selectedSector
     );
 
 }
 
 
 // ========================================
-// Create Sector Card
+// Update Sector Page
 // ========================================
 
-function createSectorCard(
-    sector,
-    name,
-    count
-) {
+function updateSectorPage() {
 
-    const card =
-        document.createElement(
-            "a"
-        );
+    const sectorCompanies =
+        getSectorCompanies();
 
-
-    card.href =
-        `sector.html?sector=${
-            encodeURIComponent(sector)
-        }`;
-
-
-    card.className =
-        "sector-card";
-
-
-    card.innerHTML = `
-
-        <span class="sector-card-name">
-
-            ${name}
-
-        </span>
-
-
-        <span class="sector-card-count">
-
-            ${count}
-            ${
-                count === 1
-                    ? "company"
-                    : "companies"
-            }
-
-        </span>
-
-    `;
-
-
-    return card;
-
-}
-
-
-// ========================================
-// Get Companies
-// ========================================
-
-function getFilteredCompanies() {
-
-    return companies;
-
-}
-
-
-// ========================================
-// Update Dashboard
-// ========================================
-
-function updateDashboard() {
 
     const rankings =
         rankCompanies(
-            getFilteredCompanies(),
+            sectorCompanies,
             prices,
             currentPeriod
         );
@@ -276,11 +206,14 @@ function updateDashboard() {
         rankings
     );
 
+
+    updatePeriodDisplay();
+
 }
 
 
 // ========================================
-// Update Overview Cards
+// Update Overview
 // ========================================
 
 function updateOverview(
@@ -305,34 +238,10 @@ function updateOverview(
         );
 
 
-    const sectorCount =
-        document.getElementById(
-            "sectorCount"
-        );
-
-
     if (companyCount) {
 
         companyCount.textContent =
             rankings.length;
-
-    }
-
-
-    if (sectorCount) {
-
-        const sectors = [
-            ...new Set(
-                rankings.map(
-                    company =>
-                        company.sector
-                )
-            )
-        ];
-
-
-        sectorCount.textContent =
-            sectors.length;
 
     }
 
@@ -399,25 +308,6 @@ function updateOverview(
 
 
 // ========================================
-// Format Performance
-// ========================================
-
-function formatPerformance(
-    value
-) {
-
-    const sign =
-        value >= 0
-            ? "+"
-            : "";
-
-
-    return `${sign}${value.toFixed(2)}%`;
-
-}
-
-
-// ========================================
 // Display Rankings
 // ========================================
 
@@ -449,9 +339,10 @@ function displayRankings(
 
             <tr>
 
-                <td colspan="7">
+                <td colspan="6">
 
-                    No companies found.
+                    No companies found
+                    in this sector.
 
                 </td>
 
@@ -486,7 +377,7 @@ function displayRankings(
 
             row.innerHTML = `
 
-                <td class="rank-number">
+                <td>
 
                     ${index + 1}
 
@@ -500,27 +391,9 @@ function displayRankings(
                 </td>
 
 
-                <td class="ticker">
+                <td>
 
                     ${company.ticker}
-
-                </td>
-
-
-                <td>
-
-                    ${company.sector}
-
-                </td>
-
-
-                <td>
-
-                    ${
-                        company.startPrice !== null
-                            ? company.startPrice.toFixed(2)
-                            : "N/A"
-                    }
 
                 </td>
 
@@ -530,6 +403,17 @@ function displayRankings(
                     ${
                         company.currentPrice !== null
                             ? company.currentPrice.toFixed(2)
+                            : "N/A"
+                    }
+
+                </td>
+
+
+                <td>
+
+                    ${
+                        company.startPrice !== null
+                            ? company.startPrice.toFixed(2)
                             : "N/A"
                     }
 
@@ -553,6 +437,47 @@ function displayRankings(
 
         }
     );
+
+}
+
+
+// ========================================
+// Format Performance
+// ========================================
+
+function formatPerformance(
+    value
+) {
+
+    const sign =
+        value >= 0
+            ? "+"
+            : "";
+
+
+    return `${sign}${value.toFixed(2)}%`;
+
+}
+
+
+// ========================================
+// Period Display
+// ========================================
+
+function updatePeriodDisplay() {
+
+    const period =
+        document.getElementById(
+            "currentPeriod"
+        );
+
+
+    if (period) {
+
+        period.textContent =
+            currentPeriod;
+
+    }
 
 }
 
@@ -594,7 +519,7 @@ periodButtons.forEach(
                     button.dataset.period;
 
 
-                updateDashboard();
+                updateSectorPage();
 
             }
         );
@@ -604,7 +529,45 @@ periodButtons.forEach(
 
 
 // ========================================
-// Start Application
+// Show Error
 // ========================================
 
-loadData();
+function showSectorError(
+    message
+) {
+
+    const sectorName =
+        document.getElementById(
+            "sectorName"
+        );
+
+
+    const description =
+        document.getElementById(
+            "sectorDescription"
+        );
+
+
+    if (sectorName) {
+
+        sectorName.textContent =
+            "Sector unavailable";
+
+    }
+
+
+    if (description) {
+
+        description.textContent =
+            message;
+
+    }
+
+}
+
+
+// ========================================
+// Start Sector Page
+// ========================================
+
+loadSectorData();

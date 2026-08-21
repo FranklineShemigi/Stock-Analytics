@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "ticker": "KCB",
+    "name": "KCB Group Plc",
+    "sector": "Banking & Finance"
+  },
+  {
+    "id": 2,
+    "ticker": "EQTY",
+    "name": "Equity Group Holdings Plc",
+    "sector": "Banking & Finance"
+  },
+  {
+    "id": 3,
+    "ticker": "SCOM",
+    "name": "Safaricom Plc",
+    "sector": "Telecommunications"
+  },
+  {
+    "id": 4,
+    "ticker": "KEGN",
+    "name": "KenGen Plc",
+    "sector": "Energy & Petroleum"
+  },
+  {
+    "id": 5,
+    "ticker": "EABL",
+    "name": "East African Breweries Plc",
+    "sector": "Manufacturing"
+  }
+]

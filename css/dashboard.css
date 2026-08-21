@@ -1,0 +1,445 @@
+/* ========================================
+   NSE Market Analytics
+   Dashboard Styles
+======================================== */
+
+
+/* ===== Dashboard Container ===== */
+
+.dashboard {
+
+    width: min(1400px, 100%);
+
+    margin: 0 auto;
+
+    padding:
+        var(--space-xl)
+        var(--space-lg);
+
+}
+
+
+/* ===== Header ===== */
+
+.dashboard-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    gap: var(--space-lg);
+
+    margin-bottom: var(--space-xl);
+
+}
+
+
+.dashboard-header h1 {
+
+    margin-bottom: var(--space-sm);
+
+    font-size: 2rem;
+
+}
+
+
+.dashboard-header p {
+
+    margin: 0;
+
+}
+
+
+/* ===== Overview Cards ===== */
+
+.overview-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: var(--space-md);
+
+    margin-bottom: var(--space-xl);
+
+}
+
+
+.overview-card {
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-md);
+
+    padding: var(--space-lg);
+
+    box-shadow: var(--shadow-sm);
+
+}
+
+
+.overview-card-label {
+
+    display: block;
+
+    margin-bottom: var(--space-sm);
+
+    color: var(--text-secondary);
+
+    font-size: 0.875rem;
+
+}
+
+
+.overview-card-value {
+
+    display: block;
+
+    color: var(--text-primary);
+
+    font-size: 1.5rem;
+
+    font-weight: 700;
+
+}
+
+
+/* ===== Performance Section ===== */
+
+.performance-section {
+
+    margin-bottom: var(--space-xl);
+
+}
+
+
+.performance-controls {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: var(--space-sm);
+
+    margin-bottom: var(--space-lg);
+
+}
+
+
+/* ===== Period Buttons ===== */
+
+.period-button {
+
+    border: 1px solid var(--border);
+
+    background: var(--surface);
+
+    color: var(--text-secondary);
+
+    border-radius: var(--radius-sm);
+
+    padding:
+        8px
+        14px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+
+}
+
+
+.period-button:hover {
+
+    border-color: var(--primary);
+
+    color: var(--primary);
+
+}
+
+
+.period-button.active {
+
+    background: var(--primary);
+
+    border-color: var(--primary);
+
+    color: white;
+
+}
+
+
+/* ===== Filters ===== */
+
+.market-filters {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: var(--space-md);
+
+    margin-bottom: var(--space-lg);
+
+}
+
+
+.filter-group {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: var(--space-xs);
+
+}
+
+
+.filter-group label {
+
+    color: var(--text-secondary);
+
+    font-size: 0.875rem;
+
+}
+
+
+.filter-group select {
+
+    min-width: 180px;
+
+    padding:
+        10px
+        12px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        var(--radius-sm);
+
+    background:
+        var(--surface);
+
+    color:
+        var(--text-primary);
+
+}
+
+
+/* ===== Rankings Card ===== */
+
+.ranking-card {
+
+    overflow: hidden;
+
+    background: var(--surface);
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        var(--radius-lg);
+
+    box-shadow:
+        var(--shadow-sm);
+
+}
+
+
+/* ===== Table Wrapper ===== */
+
+.table-wrapper {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+}
+
+
+/* ===== Ranking Table ===== */
+
+.ranking-table {
+
+    min-width: 850px;
+
+}
+
+
+.ranking-table th {
+
+    padding:
+        14px
+        16px;
+
+    background:
+        #F1F5F9;
+
+    color:
+        var(--text-secondary);
+
+    font-size:
+        0.8rem;
+
+    font-weight:
+        600;
+
+    text-align:
+        left;
+
+    white-space:
+        nowrap;
+
+}
+
+
+.ranking-table td {
+
+    padding:
+        16px;
+
+    border-top:
+        1px solid
+        var(--border);
+
+    white-space:
+        nowrap;
+
+}
+
+
+.ranking-table tbody tr {
+
+    transition:
+        background 0.2s ease;
+
+}
+
+
+.ranking-table tbody tr:hover {
+
+    background:
+        #F8FAFC;
+
+}
+
+
+/* ===== Rank ===== */
+
+.rank-number {
+
+    font-weight: 700;
+
+}
+
+
+/* ===== Ticker ===== */
+
+.ticker {
+
+    font-weight: 700;
+
+}
+
+
+/* ===== Performance ===== */
+
+.performance-positive {
+
+    color:
+        var(--positive);
+
+    font-weight:
+        700;
+
+}
+
+
+.performance-negative {
+
+    color:
+        var(--negative);
+
+    font-weight:
+        700;
+
+}
+
+
+/* ===== Responsive ===== */
+
+@media (max-width: 900px) {
+
+    .overview-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+
+    .dashboard-header {
+
+        flex-direction: column;
+
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .dashboard {
+
+        padding:
+            var(--space-lg)
+            var(--space-md);
+
+    }
+
+
+    .overview-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .dashboard-header h1 {
+
+        font-size:
+            1.6rem;
+
+    }
+
+
+    .performance-controls {
+
+        gap:
+            6px;
+
+    }
+
+
+    .period-button {
+
+        padding:
+            7px
+            10px;
+
+        font-size:
+            0.875rem;
+
+    }
+
+}

@@ -522,6 +522,85 @@
 
 }
 
+/* ========================================
+   Market Controls
+======================================== */
+
+.market-controls {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(220px, 2fr)
+        minmax(200px, 1fr);
+
+    gap: var(--space-md);
+
+    margin-bottom: var(--space-lg);
+
+}
+
+
+.market-controls label {
+
+    display: block;
+
+    margin-bottom: var(--space-xs);
+
+    font-size: 0.875rem;
+
+    font-weight: 600;
+
+}
+
+
+.market-controls input,
+.market-controls select {
+
+    width: 100%;
+
+    padding:
+        0.75rem 0.9rem;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        var(--radius-md);
+
+    background:
+        var(--surface);
+
+    color:
+        var(--text-primary);
+
+    font: inherit;
+
+}
+
+
+.market-controls input:focus,
+.market-controls select:focus {
+
+    outline: none;
+
+    border-color:
+        var(--primary);
+
+}
+
+
+@media (max-width: 700px) {
+
+    .market-controls {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
 
 /* ===== Responsive ===== */
 

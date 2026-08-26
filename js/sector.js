@@ -12,6 +12,10 @@ let currentPeriod = "1M";
 
 let selectedSector = "";
 
+let searchTerm = "";
+
+let sortMode = "performance-desc";
+
 
 // ========================================
 // Get Sector From URL
@@ -92,17 +96,16 @@ async function loadSectorData() {
         companies =
             await companiesResponse.json();
 
-
         prices =
             await pricesResponse.json();
 
 
-        // Display sector name
+        // Display sector information
 
         displaySectorHeader();
 
 
-        // Display sector companies
+        // Display companies
 
         updateSectorPage();
 
@@ -185,17 +188,71 @@ function getSectorCompanies() {
 
 function updateSectorPage() {
 
-    const sectorCompanies =
+    let sectorCompanies =
         getSectorCompanies();
 
 
-    const rankings =
+    // ====================================
+    // Search
+    // ====================================
+
+    if (searchTerm) {
+
+        const search =
+            searchTerm.toLowerCase();
+
+
+        sectorCompanies =
+            sectorCompanies.filter(
+                company => {
+
+                    const name =
+                        company.name
+                            .toLowerCase();
+
+
+                    const ticker =
+                        company.ticker
+                            .toLowerCase();
+
+
+                    return (
+                        name.includes(search) ||
+                        ticker.includes(search)
+                    );
+
+                }
+            );
+
+    }
+
+
+    // ====================================
+    // Calculate Performance
+    // ====================================
+
+    let rankings =
         rankCompanies(
             sectorCompanies,
             prices,
             currentPeriod
         );
 
+
+    // ====================================
+    // Sort Results
+    // ====================================
+
+    rankings =
+        sortRankings(
+            rankings,
+            sortMode
+        );
+
+
+    // ====================================
+    // Update Interface
+    // ====================================
 
     updateOverview(
         rankings
@@ -208,6 +265,121 @@ function updateSectorPage() {
 
 
     updatePeriodDisplay();
+
+}
+
+
+// ========================================
+// Sort Rankings
+// ========================================
+
+function sortRankings(
+    rankings,
+    sortMode
+) {
+
+    const sorted =
+        [...rankings];
+
+
+    switch (sortMode) {
+
+
+        // ================================
+        // Performance High → Low
+        // ================================
+
+        case "performance-desc":
+
+            sorted.sort(
+                (a, b) =>
+                    b.performance -
+                    a.performance
+            );
+
+            break;
+
+
+        // ================================
+        // Performance Low → High
+        // ================================
+
+        case "performance-asc":
+
+            sorted.sort(
+                (a, b) =>
+                    a.performance -
+                    b.performance
+            );
+
+            break;
+
+
+        // ================================
+        // Company A → Z
+        // ================================
+
+        case "name-asc":
+
+            sorted.sort(
+                (a, b) =>
+                    a.name.localeCompare(
+                        b.name
+                    )
+            );
+
+            break;
+
+
+        // ================================
+        // Company Z → A
+        // ================================
+
+        case "name-desc":
+
+            sorted.sort(
+                (a, b) =>
+                    b.name.localeCompare(
+                        a.name
+                    )
+            );
+
+            break;
+
+
+        // ================================
+        // Price High → Low
+        // ================================
+
+        case "price-desc":
+
+            sorted.sort(
+                (a, b) =>
+                    b.currentPrice -
+                    a.currentPrice
+            );
+
+            break;
+
+
+        // ================================
+        // Price Low → High
+        // ================================
+
+        case "price-asc":
+
+            sorted.sort(
+                (a, b) =>
+                    a.currentPrice -
+                    b.currentPrice
+            );
+
+            break;
+
+    }
+
+
+    return sorted;
 
 }
 
@@ -238,6 +410,10 @@ function updateOverview(
         );
 
 
+    // ====================================
+    // Company Count
+    // ====================================
+
     if (companyCount) {
 
         companyCount.textContent =
@@ -245,6 +421,10 @@ function updateOverview(
 
     }
 
+
+    // ====================================
+    // No Results
+    // ====================================
 
     if (
         rankings.length === 0
@@ -271,9 +451,17 @@ function updateOverview(
     }
 
 
+    // ====================================
+    // Highest Performer
+    // ====================================
+
     const highest =
         rankings[0];
 
+
+    // ====================================
+    // Lowest Performer
+    // ====================================
 
     const lowest =
         rankings[
@@ -331,6 +519,10 @@ function displayRankings(
     table.innerHTML = "";
 
 
+    // ====================================
+    // No Results
+    // ====================================
+
     if (
         rankings.length === 0
     ) {
@@ -355,6 +547,10 @@ function displayRankings(
 
     }
 
+
+    // ====================================
+    // Build Rows
+    // ====================================
 
     rankings.forEach(
         (company, index) => {
@@ -529,6 +725,62 @@ periodButtons.forEach(
 
 
 // ========================================
+// Company Search
+// ========================================
+
+const companySearch =
+    document.getElementById(
+        "companySearch"
+    );
+
+
+if (companySearch) {
+
+    companySearch.addEventListener(
+        "input",
+        event => {
+
+            searchTerm =
+                event.target.value.trim();
+
+
+            updateSectorPage();
+
+        }
+    );
+
+}
+
+
+// ========================================
+// Sorting
+// ========================================
+
+const sortSelect =
+    document.getElementById(
+        "sortSelect"
+    );
+
+
+if (sortSelect) {
+
+    sortSelect.addEventListener(
+        "change",
+        event => {
+
+            sortMode =
+                event.target.value;
+
+
+            updateSectorPage();
+
+        }
+    );
+
+}
+
+
+// ========================================
 // Show Error
 // ========================================
 
@@ -571,3 +823,4 @@ function showSectorError(
 // ========================================
 
 loadSectorData();
+

@@ -150,6 +150,68 @@
             <h2>
                 Sector Performance
             </h2>
+            
+            <!-- ===== Market Controls ===== -->
+
+<div class="market-controls">
+
+    <!-- Search -->
+
+    <div class="search-control">
+
+        <label for="companySearch">
+            Search company
+        </label>
+
+        <input
+            type="search"
+            id="companySearch"
+            placeholder="Search company or ticker..."
+            autocomplete="off"
+        >
+
+    </div>
+
+
+    <!-- Sort -->
+
+    <div class="sort-control">
+
+        <label for="sortSelect">
+            Sort by
+        </label>
+
+        <select id="sortSelect">
+
+            <option value="performance-desc">
+                Performance: High → Low
+            </option>
+
+            <option value="performance-asc">
+                Performance: Low → High
+            </option>
+
+            <option value="name-asc">
+                Company: A → Z
+            </option>
+
+            <option value="name-desc">
+                Company: Z → A
+            </option>
+
+            <option value="price-desc">
+                Price: High → Low
+            </option>
+
+            <option value="price-asc">
+                Price: Low → High
+            </option>
+
+        </select>
+
+    </div>
+
+</div>
 
 
             <!-- ===== Period Controls ===== -->

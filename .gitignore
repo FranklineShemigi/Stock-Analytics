@@ -1,0 +1,8 @@
+# OS / file manager junk
+.trashed-*
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+*.swp

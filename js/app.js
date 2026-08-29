@@ -12,6 +12,8 @@ let currentPeriod = "1M";
 
 let customRange = null;
 
+let currentRankings = [];
+
 let searchTerm = "";
 
 let watchlistOnly = false;
@@ -357,6 +359,9 @@ function updateDashboard() {
             currentPeriod,
             customRange
         );
+
+
+    currentRankings = rankings;
 
 
     updateOverview(
@@ -809,6 +814,40 @@ if (watchlistOnlyToggle) {
 
 
             updateDashboard();
+
+        }
+    );
+
+}
+
+
+// ========================================
+// CSV Export
+// ========================================
+
+const exportCsvButton =
+    document.getElementById(
+        "exportCsvButton"
+    );
+
+
+if (exportCsvButton) {
+
+    exportCsvButton.addEventListener(
+        "click",
+        () => {
+
+            const label =
+                currentPeriod === "CUSTOM" &&
+                customRange
+                    ? `${customRange.fromYear}-${customRange.toYear}`
+                    : currentPeriod;
+
+
+            exportRankingsToCsv(
+                currentRankings,
+                `nse-rankings-${label}.csv`
+            );
 
         }
     );

@@ -18,6 +18,8 @@ let searchTerm = "";
 
 let watchlistOnly = false;
 
+let currentRankings = [];
+
 let sortMode = "performance-desc";
 
 
@@ -267,6 +269,9 @@ function updateSectorPage() {
             rankings,
             sortMode
         );
+
+
+    currentRankings = rankings;
 
 
     // ====================================
@@ -870,6 +875,45 @@ if (watchlistOnlyToggle) {
 
 
             updateSectorPage();
+
+        }
+    );
+
+}
+
+
+// ========================================
+// CSV Export
+// ========================================
+
+const exportCsvButton =
+    document.getElementById(
+        "exportCsvButton"
+    );
+
+
+if (exportCsvButton) {
+
+    exportCsvButton.addEventListener(
+        "click",
+        () => {
+
+            const periodLabel =
+                currentPeriod === "CUSTOM" &&
+                customRange
+                    ? `${customRange.fromYear}-${customRange.toYear}`
+                    : currentPeriod;
+
+            const sectorLabel =
+                (selectedSector || "sector")
+                    .toLowerCase()
+                    .replace(/\s+/g, "-");
+
+
+            exportRankingsToCsv(
+                currentRankings,
+                `nse-${sectorLabel}-${periodLabel}.csv`
+            );
 
         }
     );

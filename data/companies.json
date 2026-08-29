@@ -1,32 +1,464 @@
 [
   {
     "id": 1,
-    "ticker": "KCB",
-    "name": "KCB Group Plc",
-    "sector": "Banking & Finance"
+    "ticker": "EGAD",
+    "name": "Eaagads Ltd",
+    "sector": "Agricultural"
   },
   {
     "id": 2,
-    "ticker": "EQTY",
-    "name": "Equity Group Holdings Plc",
-    "sector": "Banking & Finance"
+    "ticker": "KUKZ",
+    "name": "Kakuzi Plc",
+    "sector": "Agricultural"
   },
   {
     "id": 3,
-    "ticker": "SCOM",
-    "name": "Safaricom Plc",
-    "sector": "Telecommunications"
+    "ticker": "KAPC",
+    "name": "Kapchorua Tea Kenya Plc",
+    "sector": "Agricultural"
   },
   {
     "id": 4,
-    "ticker": "KEGN",
-    "name": "KenGen Plc",
-    "sector": "Energy & Petroleum"
+    "ticker": "LIMT",
+    "name": "Limuru Tea Plc",
+    "sector": "Agricultural"
   },
   {
     "id": 5,
+    "ticker": "SASN",
+    "name": "Sasini Plc",
+    "sector": "Agricultural"
+  },
+  {
+    "id": 6,
+    "ticker": "WTK",
+    "name": "Williamson Tea Kenya Plc",
+    "sector": "Agricultural"
+  },
+  {
+    "id": 7,
+    "ticker": "CGEN",
+    "name": "Car and General (K) Ltd",
+    "sector": "Automobiles and Accessories"
+  },
+  {
+    "id": 8,
+    "ticker": "ABSA",
+    "name": "ABSA Bank Kenya Plc",
+    "sector": "Banking"
+  },
+  {
+    "id": 9,
+    "ticker": "BKG",
+    "name": "BK Group Plc",
+    "sector": "Banking"
+  },
+  {
+    "id": 10,
+    "ticker": "COOP",
+    "name": "Co-operative Bank of Kenya Ltd",
+    "sector": "Banking"
+  },
+  {
+    "id": 11,
+    "ticker": "DTK",
+    "name": "Diamond Trust Bank Kenya Ltd",
+    "sector": "Banking"
+  },
+  {
+    "id": 12,
+    "ticker": "EQTY",
+    "name": "Equity Group Holdings Plc",
+    "sector": "Banking"
+  },
+  {
+    "id": 13,
+    "ticker": "HFCK",
+    "name": "HF Group Ltd",
+    "sector": "Banking"
+  },
+  {
+    "id": 14,
+    "ticker": "IMH",
+    "name": "I & M Holdings Plc",
+    "sector": "Banking"
+  },
+  {
+    "id": 15,
+    "ticker": "KCB",
+    "name": "KCB Group Plc",
+    "sector": "Banking"
+  },
+  {
+    "id": 16,
+    "ticker": "NCBA",
+    "name": "NCBA Group Plc",
+    "sector": "Banking"
+  },
+  {
+    "id": 17,
+    "ticker": "SBIC",
+    "name": "Stanbic Holdings Plc",
+    "sector": "Banking"
+  },
+  {
+    "id": 18,
+    "ticker": "SCBK",
+    "name": "Standard Chartered Bank Kenya Ltd",
+    "sector": "Banking"
+  },
+  {
+    "id": 19,
+    "ticker": "DCON",
+    "name": "Deacons (East Africa) Plc",
+    "sector": "Commercial and Services"
+  },
+  {
+    "id": 20,
+    "ticker": "EVRD",
+    "name": "Eveready East Africa Ltd",
+    "sector": "Commercial and Services"
+  },
+  {
+    "id": 21,
+    "ticker": "XPRS",
+    "name": "Express Kenya Plc",
+    "sector": "Commercial and Services"
+  },
+  {
+    "id": 22,
+    "ticker": "HBE",
+    "name": "Homeboyz Entertainment Plc",
+    "sector": "Commercial and Services"
+  },
+  {
+    "id": 23,
+    "ticker": "KQ",
+    "name": "Kenya Airways Plc",
+    "sector": "Commercial and Services"
+  },
+  {
+    "id": 24,
+    "ticker": "LKL",
+    "name": "Longhorn Publishers Plc",
+    "sector": "Commercial and Services"
+  },
+  {
+    "id": 25,
+    "ticker": "NBV",
+    "name": "Nairobi Business Ventures Ltd",
+    "sector": "Commercial and Services"
+  },
+  {
+    "id": 26,
+    "ticker": "NMG",
+    "name": "Nation Media Group Plc",
+    "sector": "Commercial and Services"
+  },
+  {
+    "id": 27,
+    "ticker": "SMER",
+    "name": "Sameer Africa Plc",
+    "sector": "Commercial and Services"
+  },
+  {
+    "id": 28,
+    "ticker": "SGL",
+    "name": "Standard Group Plc",
+    "sector": "Commercial and Services"
+  },
+  {
+    "id": 29,
+    "ticker": "TPSE",
+    "name": "TPS Eastern Africa (Serena) Ltd",
+    "sector": "Commercial and Services"
+  },
+  {
+    "id": 30,
+    "ticker": "UCHM",
+    "name": "Uchumi Supermarket Plc",
+    "sector": "Commercial and Services"
+  },
+  {
+    "id": 31,
+    "ticker": "SCAN",
+    "name": "WPP ScanGroup Plc",
+    "sector": "Commercial and Services"
+  },
+  {
+    "id": 32,
+    "ticker": "ARM",
+    "name": "ARM Cement Plc",
+    "sector": "Construction and Allied"
+  },
+  {
+    "id": 33,
+    "ticker": "BAMB",
+    "name": "Bamburi Cement Ltd",
+    "sector": "Construction and Allied"
+  },
+  {
+    "id": 34,
+    "ticker": "CRWN",
+    "name": "Crown Paints Kenya Plc",
+    "sector": "Construction and Allied"
+  },
+  {
+    "id": 35,
+    "ticker": "CABL",
+    "name": "East African Cables Plc",
+    "sector": "Construction and Allied"
+  },
+  {
+    "id": 36,
+    "ticker": "PORT",
+    "name": "East African Portland Cement Ltd",
+    "sector": "Construction and Allied"
+  },
+  {
+    "id": 37,
+    "ticker": "KEGN",
+    "name": "Kenya Electricity Generating Company Plc",
+    "sector": "Energy and Petroleum"
+  },
+  {
+    "id": 38,
+    "ticker": "KPC",
+    "name": "Kenya Pipeline Company Plc",
+    "sector": "Energy and Petroleum"
+  },
+  {
+    "id": 39,
+    "ticker": "KPLC-P4",
+    "name": "KPLC-P4",
+    "sector": "Energy and Petroleum"
+  },
+  {
+    "id": 40,
+    "ticker": "KPLC-P7",
+    "name": "KPLC-P7",
+    "sector": "Energy and Petroleum"
+  },
+  {
+    "id": 41,
+    "ticker": "KPLC",
+    "name": "Kenya Power and Lighting Company Plc",
+    "sector": "Energy and Petroleum"
+  },
+  {
+    "id": 42,
+    "ticker": "TOTL",
+    "name": "TotalEnergies Marketing Kenya Plc",
+    "sector": "Energy and Petroleum"
+  },
+  {
+    "id": 43,
+    "ticker": "UMME",
+    "name": "Umeme Ltd",
+    "sector": "Energy and Petroleum"
+  },
+  {
+    "id": 44,
+    "ticker": "BRIT",
+    "name": "Britam Holdings Plc",
+    "sector": "Insurance"
+  },
+  {
+    "id": 45,
+    "ticker": "CIC",
+    "name": "CIC Insurance Group Ltd",
+    "sector": "Insurance"
+  },
+  {
+    "id": 46,
+    "ticker": "JUB",
+    "name": "Jubilee Holdings Ltd",
+    "sector": "Insurance"
+  },
+  {
+    "id": 47,
+    "ticker": "KNRE",
+    "name": "Kenya Re-Insurance Corporation Ltd",
+    "sector": "Insurance"
+  },
+  {
+    "id": 48,
+    "ticker": "LBTY",
+    "name": "Liberty Kenya Holdings Ltd",
+    "sector": "Insurance"
+  },
+  {
+    "id": 49,
+    "ticker": "SLAM",
+    "name": "Sanlam Allianz Holdings (Kenya) Plc",
+    "sector": "Insurance"
+  },
+  {
+    "id": 50,
+    "ticker": "CTUM",
+    "name": "Centum Investment Company Plc",
+    "sector": "Investment"
+  },
+  {
+    "id": 51,
+    "ticker": "HAFR",
+    "name": "Home Afrika Ltd",
+    "sector": "Investment"
+  },
+  {
+    "id": 52,
+    "ticker": "KURV",
+    "name": "Kurwitu Ventures Ltd",
+    "sector": "Investment"
+  },
+  {
+    "id": 53,
+    "ticker": "OCH",
+    "name": "Olympia Capital Holdings Ltd",
+    "sector": "Investment"
+  },
+  {
+    "id": 54,
+    "ticker": "TCL",
+    "name": "Trans-Century Plc",
+    "sector": "Investment"
+  },
+  {
+    "id": 55,
+    "ticker": "NSE",
+    "name": "Nairobi Securities Exchange Plc",
+    "sector": "Investment Services"
+  },
+  {
+    "id": 56,
+    "ticker": "AMAC",
+    "name": "Africa Mega Agricorp Plc",
+    "sector": "Manufacturing and Allied"
+  },
+  {
+    "id": 57,
+    "ticker": "BOC",
+    "name": "BOC Kenya Plc",
+    "sector": "Manufacturing and Allied"
+  },
+  {
+    "id": 58,
+    "ticker": "BAT",
+    "name": "British American Tobacco Kenya Plc",
+    "sector": "Manufacturing and Allied"
+  },
+  {
+    "id": 59,
+    "ticker": "CARB",
+    "name": "Carbacid Investments Plc",
+    "sector": "Manufacturing and Allied"
+  },
+  {
+    "id": 60,
     "ticker": "EABL",
-    "name": "East African Breweries Plc",
-    "sector": "Manufacturing"
+    "name": "East African Breweries Ltd",
+    "sector": "Manufacturing and Allied"
+  },
+  {
+    "id": 61,
+    "ticker": "FTGH",
+    "name": "Flame Tree Group Holdings Ltd",
+    "sector": "Manufacturing and Allied"
+  },
+  {
+    "id": 62,
+    "ticker": "MSC",
+    "name": "Mumias Sugar Company Ltd",
+    "sector": "Manufacturing and Allied"
+  },
+  {
+    "id": 63,
+    "ticker": "SKL",
+    "name": "Shri Krishana Overseas Plc",
+    "sector": "Manufacturing and Allied"
+  },
+  {
+    "id": 64,
+    "ticker": "UNGA",
+    "name": "Unga Group Ltd",
+    "sector": "Manufacturing and Allied"
+  },
+  {
+    "id": 65,
+    "ticker": "SCOM",
+    "name": "Safaricom Plc",
+    "sector": "Telecommunication"
+  },
+  {
+    "id": 66,
+    "ticker": "ALP",
+    "name": "Africa Logistics Properties Industria...",
+    "sector": "Real Estate Investment Trusts"
+  },
+  {
+    "id": 67,
+    "ticker": "LAPR",
+    "name": "LAPTrust Imara Income-REIT",
+    "sector": "Real Estate Investment Trusts"
+  },
+  {
+    "id": 68,
+    "ticker": "GLD",
+    "name": "ABSA NewGold ETF",
+    "sector": "Exchange Traded Funds"
+  },
+  {
+    "id": 69,
+    "ticker": "SMWF",
+    "name": "Satrix MSCI World Feeder ETF",
+    "sector": "Exchange Traded Funds"
+  },
+  {
+    "id": 70,
+    "ticker": "^N10I",
+    "name": "NSE 10-Share Index",
+    "sector": "Indices"
+  },
+  {
+    "id": 71,
+    "ticker": "^N20I",
+    "name": "NSE 20-Share Index",
+    "sector": "Indices"
+  },
+  {
+    "id": 72,
+    "ticker": "^N25I",
+    "name": "NSE 25-Share Index",
+    "sector": "Indices"
+  },
+  {
+    "id": 73,
+    "ticker": "^NASI",
+    "name": "NSE All-Share Index",
+    "sector": "Indices"
+  },
+  {
+    "id": 74,
+    "ticker": "^NBSI",
+    "name": "NSE Banking Sector Index",
+    "sector": "Indices"
+  },
+  {
+    "id": 75,
+    "ticker": "^NBDI",
+    "name": "NSE Bonds Index",
+    "sector": "Indices"
+  },
+  {
+    "id": 76,
+    "ticker": "^ZKEQTK",
+    "name": "Zamara Kenya Equity Index (KES)",
+    "sector": "Indices"
+  },
+  {
+    "id": 77,
+    "ticker": "^ZKEQTU",
+    "name": "Zamara Kenya Equity Index (USD)",
+    "sector": "Indices"
   }
 ]

@@ -67,6 +67,12 @@ async function loadData() {
         updateDashboard();
 
 
+        // Build today's top movers (always 1D,
+        // independent of the selected period)
+
+        updateTopMovers();
+
+
     } catch (error) {
 
         console.error(
@@ -378,6 +384,127 @@ function updateDashboard() {
 
 // ========================================
 // Update Overview Cards
+// ========================================
+
+// ========================================
+// Today's Top Movers (always 1D)
+// ========================================
+
+function updateTopMovers() {
+
+    const gainersList =
+        document.getElementById(
+            "topMoversGainers"
+        );
+
+    const losersList =
+        document.getElementById(
+            "topMoversLosers"
+        );
+
+
+    if (!gainersList || !losersList) {
+
+        return;
+
+    }
+
+
+    const rankings =
+        rankCompanies(
+            companies,
+            prices,
+            "1D"
+        ).filter(
+            company =>
+                company.startPrice !== null &&
+                company.currentPrice !== null
+        );
+
+
+    const sorted =
+        rankings
+            .slice()
+            .sort(
+                (a, b) =>
+                    b.performance -
+                    a.performance
+            );
+
+
+    const topGainers =
+        sorted.slice(0, 5);
+
+    const topLosers =
+        sorted
+            .slice(-5)
+            .reverse();
+
+
+    const renderList = (
+        list,
+        items
+    ) => {
+
+        if (items.length === 0) {
+
+            list.innerHTML =
+                "<li>No data available.</li>";
+
+            return;
+
+        }
+
+
+        list.innerHTML =
+            items
+                .map(
+                    company => `
+
+                <li>
+
+                    <a href="company.html?ticker=${encodeURIComponent(company.ticker)}">
+
+                        ${company.ticker}
+
+                    </a>
+
+                    <span class="${
+                        company.performance >= 0
+                            ? "performance-positive"
+                            : "performance-negative"
+                    }">
+
+                        ${formatPerformance(
+                            company.performance
+                        )}
+
+                    </span>
+
+                </li>
+
+            `
+                )
+                .join("");
+
+    };
+
+
+    renderList(
+        gainersList,
+        topGainers
+    );
+
+    renderList(
+        losersList,
+        topLosers
+    );
+
+}
+
+
+// ========================================
+// Overview Cards
 // ========================================
 
 function updateOverview(

@@ -22,9 +22,6 @@ async function loadData() {
         const companiesResponse =
             await fetch("data/companies.json");
 
-        const pricesResponse =
-            await fetch("data/prices.json");
-
 
         if (!companiesResponse.ok) {
 
@@ -35,20 +32,11 @@ async function loadData() {
         }
 
 
-        if (!pricesResponse.ok) {
-
-            throw new Error(
-                "Unable to load prices.json"
-            );
-
-        }
-
-
         companies =
             await companiesResponse.json();
 
         prices =
-            await pricesResponse.json();
+            await loadHistoricalPrices();
 
 
         // Build sector explorer

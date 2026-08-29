@@ -67,14 +67,6 @@ async function loadSectorData() {
             );
 
 
-        // Load prices
-
-        const pricesResponse =
-            await fetch(
-                "data/prices.json"
-            );
-
-
         if (!companiesResponse.ok) {
 
             throw new Error(
@@ -84,20 +76,13 @@ async function loadSectorData() {
         }
 
 
-        if (!pricesResponse.ok) {
-
-            throw new Error(
-                "Unable to load prices.json"
-            );
-
-        }
-
-
         companies =
             await companiesResponse.json();
 
+        // Load prices (merged from yearly files)
+
         prices =
-            await pricesResponse.json();
+            await loadHistoricalPrices();
 
 
         // Display sector information
@@ -570,62 +555,74 @@ function displayRankings(
                     ? "performance-positive"
                     : "performance-negative";
 
+row.innerHTML = `
 
-            row.innerHTML = `
-
-                <td>
-
-                    ${index + 1}
-
-                </td>
+    <td>
+        ${index + 1}
+    </td>
 
 
-                <td>
+    <td>
 
-                    ${company.name}
+        <a
+            href="company.html?ticker=${encodeURIComponent(company.ticker)}"
+            class="company-link"
+        >
 
-                </td>
+            ${company.name}
 
+        </a>
 
-                <td>
-
-                    ${company.ticker}
-
-                </td>
-
-
-                <td>
-
-                    ${
-                        company.currentPrice !== null
-                            ? company.currentPrice.toFixed(2)
-                            : "N/A"
-                    }
-
-                </td>
+    </td>
 
 
-                <td>
+    <td>
 
-                    ${
-                        company.startPrice !== null
-                            ? company.startPrice.toFixed(2)
-                            : "N/A"
-                    }
+        <a
+            href="company.html?ticker=${encodeURIComponent(company.ticker)}"
+            class="company-link"
+        >
 
-                </td>
+            ${company.ticker}
+
+        </a>
+
+    </td>
 
 
-                <td class="${performanceClass}">
+    <td>
 
-                    ${formatPerformance(
-                        performance
-                    )}
+        ${
+            company.currentPrice !== null
+                ? company.currentPrice.toFixed(2)
+                : "N/A"
+        }
 
-                </td>
+    </td>
 
-            `;
 
+    <td>
+
+        ${
+            company.startPrice !== null
+                ? company.startPrice.toFixed(2)
+                : "N/A"
+        }
+
+    </td>
+
+
+    <td class="${performanceClass}">
+
+        ${formatPerformance(
+            company.performance
+        )}
+
+    </td>
+
+`;
+            
+          
 
             table.appendChild(
                 row

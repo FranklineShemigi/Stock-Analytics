@@ -282,6 +282,21 @@
 
 /* ===== Filters ===== */
 
+.ranking-toolbar {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    align-items: center;
+
+    gap: var(--space-md);
+
+    margin-bottom: var(--space-md);
+
+}
+
+
 .market-filters {
 
     display: flex;
@@ -291,6 +306,117 @@
     gap: var(--space-md);
 
     margin-bottom: var(--space-lg);
+
+}
+
+
+/* ===== Watchlist ===== */
+
+.watch-column {
+
+    width: 32px;
+
+    text-align: center;
+
+}
+
+
+.watch-star {
+
+    border: none;
+
+    background: none;
+
+    cursor: pointer;
+
+    font-size: 1.15rem;
+
+    line-height: 1;
+
+    padding: 4px;
+
+    color: var(--text-secondary);
+
+    transition: color 0.15s ease, transform 0.15s ease;
+
+}
+
+
+.watch-star:hover {
+
+    transform: scale(1.15);
+
+}
+
+
+.watch-star.watched {
+
+    color: #f5b301;
+
+}
+
+
+.watchlist-filter {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    font-size: 0.9rem;
+
+    color: var(--text-secondary);
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+}
+
+
+.watchlist-filter input {
+
+    cursor: pointer;
+
+}
+
+
+.sr-only {
+
+    position: absolute;
+
+    width: 1px;
+
+    height: 1px;
+
+    padding: 0;
+
+    margin: -1px;
+
+    overflow: hidden;
+
+    clip: rect(0, 0, 0, 0);
+
+    white-space: nowrap;
+
+    border: 0;
+
+}
+
+
+.company-watch-star-slot {
+
+    display: inline-block;
+
+    margin-left: 8px;
+
+}
+
+
+.company-watch-star-slot .watch-star {
+
+    font-size: 1.4rem;
 
 }
 

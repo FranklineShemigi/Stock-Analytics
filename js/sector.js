@@ -16,6 +16,8 @@ let selectedSector = "";
 
 let searchTerm = "";
 
+let watchlistOnly = false;
+
 let sortMode = "performance-desc";
 
 
@@ -217,6 +219,27 @@ function updateSectorPage() {
                     );
 
                 }
+            );
+
+    }
+
+
+    // ====================================
+    // Watchlist Only
+    // ====================================
+
+    if (watchlistOnly) {
+
+        const watched =
+            getWatchlist();
+
+
+        sectorCompanies =
+            sectorCompanies.filter(
+                company =>
+                    watched.includes(
+                        company.ticker
+                    )
             );
 
     }
@@ -527,7 +550,7 @@ function displayRankings(
 
             <tr>
 
-                <td colspan="6">
+                <td colspan="7">
 
                     No companies found
                     in this sector.
@@ -566,7 +589,38 @@ function displayRankings(
                     ? "performance-positive"
                     : "performance-negative";
 
-row.innerHTML = `
+
+            const watchCell =
+                document.createElement(
+                    "td"
+                );
+
+            watchCell.className =
+                "watch-column";
+
+            watchCell.appendChild(
+                createWatchStarButton(
+                    company.ticker,
+                    () => {
+
+                        if (watchlistOnly) {
+
+                            updateSectorPage();
+
+                        }
+
+                    }
+                )
+            );
+
+            row.appendChild(
+                watchCell
+            );
+
+
+row.insertAdjacentHTML(
+    "beforeend",
+    `
 
     <td>
         ${index + 1}
@@ -631,7 +685,8 @@ row.innerHTML = `
 
     </td>
 
-`;
+`
+);
             
           
 
@@ -784,6 +839,34 @@ if (companySearch) {
 
             searchTerm =
                 event.target.value.trim();
+
+
+            updateSectorPage();
+
+        }
+    );
+
+}
+
+
+// ========================================
+// Watchlist Only Toggle
+// ========================================
+
+const watchlistOnlyToggle =
+    document.getElementById(
+        "watchlistOnlyToggle"
+    );
+
+
+if (watchlistOnlyToggle) {
+
+    watchlistOnlyToggle.addEventListener(
+        "change",
+        () => {
+
+            watchlistOnly =
+                watchlistOnlyToggle.checked;
 
 
             updateSectorPage();

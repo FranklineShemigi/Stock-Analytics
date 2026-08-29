@@ -14,6 +14,8 @@ let customRange = null;
 
 let searchTerm = "";
 
+let watchlistOnly = false;
+
 
 // ========================================
 // Load Market Data
@@ -83,7 +85,7 @@ async function loadData() {
 
                 <tr>
 
-                    <td colspan="7">
+                    <td colspan="8">
 
                         Unable to load market data.
 
@@ -131,7 +133,7 @@ function showLoadingState(loaded, total) {
 
         <tr>
 
-            <td colspan="7">
+            <td colspan="8">
 
                 Loading market data${
                     total > 1
@@ -298,26 +300,46 @@ function createSectorCard(
 
 function getFilteredCompanies() {
 
-    if (!searchTerm) {
+    let filtered = companies;
 
-        return companies;
+
+    if (searchTerm) {
+
+        const term =
+            searchTerm.toLowerCase();
+
+
+        filtered =
+            filtered.filter(
+                company =>
+                    company.name
+                        .toLowerCase()
+                        .includes(term) ||
+                    company.ticker
+                        .toLowerCase()
+                        .includes(term)
+            );
 
     }
 
 
-    const term =
-        searchTerm.toLowerCase();
+    if (watchlistOnly) {
+
+        const watched =
+            getWatchlist();
+
+        filtered =
+            filtered.filter(
+                company =>
+                    watched.includes(
+                        company.ticker
+                    )
+            );
+
+    }
 
 
-    return companies.filter(
-        company =>
-            company.name
-                .toLowerCase()
-                .includes(term) ||
-            company.ticker
-                .toLowerCase()
-                .includes(term)
-    );
+    return filtered;
 
 }
 
@@ -519,7 +541,7 @@ function displayRankings(
 
             <tr>
 
-                <td colspan="7">
+                <td colspan="8">
 
                     No companies found.
 
@@ -554,7 +576,37 @@ function displayRankings(
                     : "performance-negative";
 
 
-            row.innerHTML = `
+            const watchCell =
+                document.createElement(
+                    "td"
+                );
+
+            watchCell.className =
+                "watch-column";
+
+            watchCell.appendChild(
+                createWatchStarButton(
+                    company.ticker,
+                    () => {
+
+                        if (watchlistOnly) {
+
+                            updateDashboard();
+
+                        }
+
+                    }
+                )
+            );
+
+            row.appendChild(
+                watchCell
+            );
+
+
+            row.insertAdjacentHTML(
+                "beforeend",
+                `
 
                 <td class="rank-number">
 
@@ -614,7 +666,8 @@ function displayRankings(
 
                 </td>
 
-            `;
+            `
+            );
 
 
             table.appendChild(
@@ -725,6 +778,34 @@ if (searchInput) {
 
             searchTerm =
                 searchInput.value;
+
+
+            updateDashboard();
+
+        }
+    );
+
+}
+
+
+// ========================================
+// Watchlist Only Toggle
+// ========================================
+
+const watchlistOnlyToggle =
+    document.getElementById(
+        "watchlistOnlyToggle"
+    );
+
+
+if (watchlistOnlyToggle) {
+
+    watchlistOnlyToggle.addEventListener(
+        "change",
+        () => {
+
+            watchlistOnly =
+                watchlistOnlyToggle.checked;
 
 
             updateDashboard();

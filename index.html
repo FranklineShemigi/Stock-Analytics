@@ -297,6 +297,17 @@
                         autocomplete="off"
                     >
 
+                    <label class="watchlist-filter">
+
+                        <input
+                            type="checkbox"
+                            id="watchlistOnlyToggle"
+                        >
+
+                        Watchlist only
+
+                    </label>
+
                 </div>
 
                 <div class="table-wrapper">
@@ -307,6 +318,10 @@
                         <thead>
 
                             <tr>
+
+                                <th class="watch-column">
+                                    <span class="sr-only">Watch</span>
+                                </th>
 
                                 <th>
                                     Rank
@@ -345,7 +360,7 @@
 
                             <tr>
 
-                                <td colspan="7">
+                                <td colspan="8">
 
                                     Loading market data...
 
@@ -374,6 +389,8 @@
     <script src="js/data-loader.js"></script>
 
     <script src="js/year-range.js"></script>
+
+    <script src="js/watchlist.js"></script>
 
     <script src="js/performance.js"></script>
 

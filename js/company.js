@@ -1273,6 +1273,85 @@ function showNoPriceData() {
 
 
 // ========================================
+// Display Company Header
+// ========================================
+//
+// Populates the ticker/name/sector header and
+// the watchlist star. This was previously called
+// but never defined, so the page threw a
+// ReferenceError right after finding the company.
+
+function displayCompany() {
+
+    const tickerEl =
+        document.getElementById(
+            "companyTicker"
+        );
+
+    const nameEl =
+        document.getElementById(
+            "companyName"
+        );
+
+    const sectorEl =
+        document.getElementById(
+            "companySector"
+        );
+
+    const starSlot =
+        document.getElementById(
+            "companyWatchStar"
+        );
+
+
+    if (tickerEl) {
+
+        tickerEl.textContent =
+            selectedCompany.ticker;
+
+    }
+
+
+    if (nameEl) {
+
+        nameEl.textContent =
+            selectedCompany.name;
+
+    }
+
+
+    if (sectorEl) {
+
+        sectorEl.textContent =
+            selectedCompany.sector;
+
+    }
+
+
+    if (
+        starSlot &&
+        typeof createWatchStarButton ===
+            "function"
+    ) {
+
+        starSlot.innerHTML = "";
+
+        starSlot.appendChild(
+            createWatchStarButton(
+                selectedCompany.ticker
+            )
+        );
+
+    }
+
+
+    document.title =
+        `${selectedCompany.name} (${selectedCompany.ticker}) - NSE Market Analytics`;
+
+}
+
+
+// ========================================
 // Error Handling
 // ========================================
 

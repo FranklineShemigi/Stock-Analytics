@@ -80,8 +80,18 @@ async function loadCompanyData() {
         // Load Real NSE Historical Data
         // ====================================
 
+        showCompanyLoading(0, 1);
+
         prices =
-            await loadHistoricalPrices();
+            await loadHistoricalPrices(
+                undefined,
+                undefined,
+                (loaded, total) =>
+                    showCompanyLoading(
+                        loaded,
+                        total
+                    )
+            );
 
 
         // ====================================
@@ -132,6 +142,41 @@ async function loadCompanyData() {
     }
 
 }
+
+// ========================================
+// Show Loading State
+// ========================================
+
+function showCompanyLoading(loaded, total) {
+
+    const currentPrice =
+        document.getElementById(
+            "currentPrice"
+        );
+
+
+    if (!currentPrice) {
+
+        return;
+
+    }
+
+
+    const percent =
+        total > 0
+            ? Math.round(
+                (loaded / total) * 100
+            )
+            : 0;
+
+
+    currentPrice.textContent =
+        total > 1
+            ? `Loading ${percent}%`
+            : "Loading...";
+
+}
+
 
 // =======================================
 // Get Company Prices

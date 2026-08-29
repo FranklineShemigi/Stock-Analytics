@@ -10,6 +10,8 @@ let prices = [];
 
 let currentPeriod = "1M";
 
+let searchTerm = "";
+
 
 // ========================================
 // Load Market Data
@@ -18,6 +20,8 @@ let currentPeriod = "1M";
 async function loadData() {
 
     try {
+
+        showLoadingState(0, 1);
 
         const companiesResponse =
             await fetch("data/companies.json");
@@ -36,7 +40,15 @@ async function loadData() {
             await companiesResponse.json();
 
         prices =
-            await loadHistoricalPrices();
+            await loadHistoricalPrices(
+                undefined,
+                undefined,
+                (loaded, total) =>
+                    showLoadingState(
+                        loaded,
+                        total
+                    )
+            );
 
 
         // Build sector explorer
@@ -82,6 +94,54 @@ async function loadData() {
         }
 
     }
+
+}
+
+
+// ========================================
+// Loading State
+// ========================================
+
+function showLoadingState(loaded, total) {
+
+    const table =
+        document.getElementById(
+            "rankingTable"
+        );
+
+
+    if (!table) {
+
+        return;
+
+    }
+
+
+    const percent =
+        total > 0
+            ? Math.round(
+                (loaded / total) * 100
+            )
+            : 0;
+
+
+    table.innerHTML = `
+
+        <tr>
+
+            <td colspan="7">
+
+                Loading market data${
+                    total > 1
+                        ? ` (${percent}%)`
+                        : "..."
+                }
+
+            </td>
+
+        </tr>
+
+    `;
 
 }
 
@@ -236,7 +296,26 @@ function createSectorCard(
 
 function getFilteredCompanies() {
 
-    return companies;
+    if (!searchTerm) {
+
+        return companies;
+
+    }
+
+
+    const term =
+        searchTerm.toLowerCase();
+
+
+    return companies.filter(
+        company =>
+            company.name
+                .toLowerCase()
+                .includes(term) ||
+            company.ticker
+                .toLowerCase()
+                .includes(term)
+    );
 
 }
 
@@ -589,6 +668,34 @@ periodButtons.forEach(
 
     }
 );
+
+
+// ========================================
+// Search Input
+// ========================================
+
+const searchInput =
+    document.getElementById(
+        "companySearch"
+    );
+
+
+if (searchInput) {
+
+    searchInput.addEventListener(
+        "input",
+        () => {
+
+            searchTerm =
+                searchInput.value;
+
+
+            updateDashboard();
+
+        }
+    );
+
+}
 
 
 // ========================================

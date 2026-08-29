@@ -82,7 +82,15 @@ async function loadSectorData() {
         // Load prices (merged from yearly files)
 
         prices =
-            await loadHistoricalPrices();
+            await loadHistoricalPrices(
+                undefined,
+                undefined,
+                (loaded, total) =>
+                    showSectorLoading(
+                        loaded,
+                        total
+                    )
+            );
 
 
         // Display sector information
@@ -773,6 +781,54 @@ if (sortSelect) {
 
         }
     );
+
+}
+
+
+// ========================================
+// Show Loading State
+// ========================================
+
+function showSectorLoading(loaded, total) {
+
+    const table =
+        document.getElementById(
+            "rankingTable"
+        );
+
+
+    if (!table) {
+
+        return;
+
+    }
+
+
+    const percent =
+        total > 0
+            ? Math.round(
+                (loaded / total) * 100
+            )
+            : 0;
+
+
+    table.innerHTML = `
+
+        <tr>
+
+            <td colspan="7">
+
+                Loading market data${
+                    total > 1
+                        ? ` (${percent}%)`
+                        : "..."
+                }
+
+            </td>
+
+        </tr>
+
+    `;
 
 }
 

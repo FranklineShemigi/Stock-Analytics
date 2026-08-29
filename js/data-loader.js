@@ -126,36 +126,119 @@ function normalizePriceRecord(record) {
 
 // ========================================
 // Load All Historical Prices
+//
+// Loads years [startYear, endYear] in parallel.
+// A single bad/missing year file will NOT stop
+// the others from loading - it is skipped with
+// a console warning instead.
+//
+// onProgress(loadedYears, totalYears) is called
+// after each year settles, so callers can show a
+// loading indicator.
 // ========================================
 
-async function loadHistoricalPrices() {
+async function loadHistoricalPrices(
+    startYear = NSE_START_YEAR,
+    endYear = NSE_END_YEAR,
+    onProgress = null
+) {
 
-    const allPrices = [];
-
+    const years = [];
 
     for (
-        let year = NSE_START_YEAR;
-        year <= NSE_END_YEAR;
+        let year = startYear;
+        year <= endYear;
         year++
     ) {
-
-        const yearData =
-            await loadYearData(year);
-
-
-        const normalizedData =
-            yearData.map(
-                normalizePriceRecord
-            );
+        years.push(year);
+    }
 
 
-        allPrices.push(
-            ...normalizedData
+    let loadedCount = 0;
+
+    const settled =
+        await Promise.allSettled(
+            years.map(year =>
+                loadYearData(year).then(
+                    yearData => {
+
+                        loadedCount++;
+
+                        if (onProgress) {
+                            onProgress(
+                                loadedCount,
+                                years.length
+                            );
+                        }
+
+                        return {
+                            year,
+                            yearData
+                        };
+                    },
+                    error => {
+
+                        loadedCount++;
+
+                        if (onProgress) {
+                            onProgress(
+                                loadedCount,
+                                years.length
+                            );
+                        }
+
+                        throw error;
+                    }
+                )
+            )
         );
 
 
-        console.log(
-            `${year}: ${normalizedData.length} records loaded`
+    const allPrices = [];
+
+    const failedYears = [];
+
+
+    settled.forEach(result => {
+
+        if (result.status === "fulfilled") {
+
+            const { year, yearData } =
+                result.value;
+
+            const normalizedData =
+                yearData.map(
+                    normalizePriceRecord
+                );
+
+            allPrices.push(
+                ...normalizedData
+            );
+
+            console.log(
+                `${year}: ${normalizedData.length} records loaded`
+            );
+
+        } else {
+
+            failedYears.push(
+                result.reason
+            );
+
+            console.warn(
+                "Skipping a year of price data:",
+                result.reason
+            );
+
+        }
+
+    });
+
+
+    if (failedYears.length === years.length) {
+
+        throw new Error(
+            "Unable to load any price data."
         );
 
     }
@@ -173,7 +256,7 @@ async function loadHistoricalPrices() {
 
 
     console.log(
-        `Total historical records: ${allPrices.length}`
+        `Total historical records: ${allPrices.length} (${failedYears.length} year(s) failed to load)`
     );
 
 

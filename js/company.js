@@ -14,6 +14,14 @@ let currentPeriod = "1M";
 
 let customRange = null;
 
+let compareTickers = [];
+
+const COMPARE_COLORS = [
+    "#DC2626",
+    "#7C3AED",
+    "#D97706"
+];
+
 
 // ========================================
 // Get Ticker From URL
@@ -190,6 +198,63 @@ function getCompanyPrices() {
         price =>
             price.ticker ===
             selectedCompany.ticker
+    );
+
+}
+
+
+// ========================================
+// Get Prices For Any Ticker, In Range
+// ========================================
+
+function getPricesForTickerInRange(
+    ticker,
+    startDate,
+    endDate
+) {
+
+    const tickerPrices =
+        prices
+            .filter(
+                price =>
+                    price.ticker === ticker
+            )
+            .sort(
+                (a, b) =>
+                    new Date(a.date) -
+                    new Date(b.date)
+            );
+
+
+    return tickerPrices.filter(
+        item => {
+
+            const itemDate =
+                new Date(item.date);
+
+            if (
+                startDate &&
+                itemDate < startDate
+            ) {
+
+                return false;
+
+            }
+
+
+            if (
+                endDate &&
+                itemDate > endDate
+            ) {
+
+                return false;
+
+            }
+
+
+            return true;
+
+        }
     );
 
 }
@@ -401,6 +466,8 @@ function updateCompanyAnalytics() {
 
     drawPriceChart();
 
+    drawVolumeChart();
+
 }
 
 
@@ -425,12 +492,12 @@ function drawPriceChart() {
 
     // ===== Get Selected Period =====
 
-    const companyPrices =
+    const mainPrices =
         getPricesForPeriod();
 
 
     if (
-        companyPrices.length === 0
+        mainPrices.length === 0
     ) {
 
         const ctx =
@@ -448,6 +515,168 @@ function drawPriceChart() {
         return;
 
     }
+
+
+    // ====================================
+    // Build Series (main + compares)
+    //
+    // Compare mode normalizes every series
+    // to % change from its first value in
+    // range, since absolute prices across
+    // companies aren't comparable on one
+    // axis. With no compares, the main
+    // series is shown at absolute price.
+    // ====================================
+
+    const { startDate, endDate } =
+        getPeriodRange(currentPeriod);
+
+
+    const isCompareMode =
+        compareTickers.length > 0;
+
+
+    function toSeries(
+        rawPrices,
+        label,
+        color
+    ) {
+
+        if (!isCompareMode) {
+
+            return {
+
+                label,
+
+                color,
+
+                points:
+                    rawPrices.map(
+                        item => ({
+
+                            date: item.date,
+
+                            value:
+                                Number(
+                                    item.close
+                                )
+
+                        })
+                    )
+
+            };
+
+        }
+
+
+        const firstClose =
+            Number(
+                rawPrices[0].close
+            );
+
+
+        return {
+
+            label,
+
+            color,
+
+            points:
+                rawPrices.map(
+                    item => ({
+
+                        date: item.date,
+
+                        value:
+                            firstClose === 0
+                                ? 0
+                                : (
+                                    (
+                                        Number(
+                                            item.close
+                                        ) -
+                                        firstClose
+                                    ) /
+                                    firstClose
+                                ) * 100
+
+                    })
+                )
+
+        };
+
+    }
+
+
+    const styles =
+        getComputedStyle(
+            document.documentElement
+        );
+
+
+    const primaryColor =
+        styles
+            .getPropertyValue(
+                "--primary"
+            )
+            .trim();
+
+
+    const borderColor =
+        styles
+            .getPropertyValue(
+                "--border"
+            )
+            .trim();
+
+
+    const secondaryColor =
+        styles
+            .getPropertyValue(
+                "--text-secondary"
+            )
+            .trim();
+
+
+    const series = [
+        toSeries(
+            mainPrices,
+            selectedCompany.ticker,
+            primaryColor
+        )
+    ];
+
+
+    compareTickers.forEach(
+        (ticker, i) => {
+
+            const comparePrices =
+                getPricesForTickerInRange(
+                    ticker,
+                    startDate,
+                    endDate
+                );
+
+
+            if (comparePrices.length === 0) {
+
+                return;
+
+            }
+
+
+            series.push(
+                toSeries(
+                    comparePrices,
+                    ticker,
+                    COMPARE_COLORS[
+                        i % COMPARE_COLORS.length
+                    ]
+                )
+            );
+
+        }
+    );
 
 
     // ====================================
@@ -510,9 +739,13 @@ function drawPriceChart() {
 
         bottom: 40,
 
-        left: 60
+        left: isCompareMode ? 50 : 60
 
     };
+
+
+    const legendHeight =
+        isCompareMode ? 26 : 0;
 
 
     const chartWidth =
@@ -524,42 +757,45 @@ function drawPriceChart() {
     const chartHeight =
         height -
         padding.top -
-        padding.bottom;
+        padding.bottom -
+        legendHeight;
 
 
     // ====================================
-    // Price Data
+    // Value Range (across all series)
     // ====================================
 
-    const values =
-        companyPrices.map(
-            item =>
-                Number(item.close)
+    const allValues =
+        series.flatMap(
+            s =>
+                s.points.map(
+                    p => p.value
+                )
         );
 
 
-    const minPrice =
-        Math.min(...values);
+    const minValue =
+        Math.min(...allValues);
 
 
-    const maxPrice =
-        Math.max(...values);
+    const maxValue =
+        Math.max(...allValues);
 
 
-    const range =
-        maxPrice -
-        minPrice ||
+    const valueSpan =
+        maxValue -
+        minValue ||
         1;
 
 
     const chartMin =
-        minPrice -
-        range * 0.10;
+        minValue -
+        valueSpan * 0.10;
 
 
     const chartMax =
-        maxPrice +
-        range * 0.10;
+        maxValue +
+        valueSpan * 0.10;
 
 
     const chartRange =
@@ -568,37 +804,66 @@ function drawPriceChart() {
 
 
     // ====================================
-    // Get Theme Colors
+    // Time Range (x-axis by date, so
+    // series with slightly different
+    // trading days still line up)
     // ====================================
 
-    const styles =
-        getComputedStyle(
-            document.documentElement
+    const allDates =
+        series.flatMap(
+            s =>
+                s.points.map(
+                    p => new Date(p.date).getTime()
+                )
         );
 
 
-    const borderColor =
-        styles
-            .getPropertyValue(
-                "--border"
-            )
-            .trim();
+    const minTime =
+        Math.min(...allDates);
 
 
-    const secondaryColor =
-        styles
-            .getPropertyValue(
-                "--text-secondary"
-            )
-            .trim();
+    const maxTime =
+        Math.max(...allDates);
 
 
-    const primaryColor =
-        styles
-            .getPropertyValue(
-                "--primary"
-            )
-            .trim();
+    const timeSpan =
+        maxTime - minTime || 1;
+
+
+    function xForDate(dateStr) {
+
+        const t =
+            new Date(dateStr).getTime();
+
+
+        return (
+            padding.left +
+            (
+                (t - minTime) /
+                timeSpan
+            ) *
+            chartWidth
+        );
+
+    }
+
+
+    function yForValue(value) {
+
+        return (
+            padding.top +
+            legendHeight +
+            (
+                1 -
+                (
+                    (value - chartMin) /
+                    chartRange
+                )
+            ) *
+            chartHeight
+        );
+
+    }
 
 
     // ====================================
@@ -611,6 +876,60 @@ function drawPriceChart() {
         width,
         height
     );
+
+
+    // ====================================
+    // Legend (compare mode only)
+    // ====================================
+
+    if (isCompareMode) {
+
+        let legendX = padding.left;
+
+        const legendY =
+            padding.top + 8;
+
+
+        ctx.font =
+            "12px sans-serif";
+
+
+        ctx.textAlign = "left";
+
+
+        series.forEach(s => {
+
+            ctx.fillStyle = s.color;
+
+            ctx.fillRect(
+                legendX,
+                legendY - 8,
+                10,
+                10
+            );
+
+
+            ctx.fillStyle =
+                secondaryColor;
+
+            const label = ` ${s.label}`;
+
+            ctx.fillText(
+                label,
+                legendX + 12,
+                legendY + 1
+            );
+
+
+            legendX +=
+                12 +
+                ctx.measureText(label)
+                    .width +
+                16;
+
+        });
+
+    }
 
 
     // ====================================
@@ -635,6 +954,7 @@ function drawPriceChart() {
 
         const y =
             padding.top +
+            legendHeight +
             (
                 i /
                 gridLines
@@ -661,9 +981,9 @@ function drawPriceChart() {
         ctx.stroke();
 
 
-        // ===== Price Label =====
+        // ===== Value Label =====
 
-        const price =
+        const value =
             chartMax -
             (
                 i /
@@ -685,7 +1005,9 @@ function drawPriceChart() {
 
 
         ctx.fillText(
-            price.toFixed(2),
+            isCompareMode
+                ? `${value.toFixed(1)}%`
+                : value.toFixed(2),
             padding.left - 8,
             y + 4
         );
@@ -694,136 +1016,115 @@ function drawPriceChart() {
 
 
     // ====================================
-    // Create Chart Points
+    // Draw Each Series
     // ====================================
 
-    const points =
-        companyPrices.map(
-            (item, index) => {
+    series.forEach(s => {
 
-                const x =
-                    padding.left +
-                    (
-                        index /
-                        Math.max(
-                            companyPrices.length - 1,
-                            1
-                        )
-                    ) *
-                    chartWidth;
+        const points =
+            s.points.map(p => ({
+
+                x: xForDate(p.date),
+
+                y: yForValue(p.value),
+
+                date: p.date
+
+            }));
 
 
-                const y =
-                    padding.top +
-                    (
-                        1 -
-                        (
-                            (
-                                Number(
-                                    item.close
-                                ) -
-                                chartMin
-                            ) /
-                            chartRange
-                        )
-                    ) *
-                    chartHeight;
+        ctx.beginPath();
 
 
-                return {
+        points.forEach(
+            (point, index) => {
 
-                    x: x,
+                if (index === 0) {
 
-                    y: y,
+                    ctx.moveTo(
+                        point.x,
+                        point.y
+                    );
 
-                    price:
-                        Number(
-                            item.close
-                        ),
+                } else {
 
-                    date:
-                        item.date
+                    ctx.lineTo(
+                        point.x,
+                        point.y
+                    );
 
-                };
+                }
 
             }
         );
 
 
-    // ====================================
-    // Draw Price Line
-    // ====================================
+        ctx.strokeStyle = s.color;
 
-    ctx.beginPath();
+        ctx.lineWidth = 2.5;
+
+        ctx.stroke();
 
 
-    points.forEach(
-        (point, index) => {
+        // ===== Points =====
+        //
+        // Only draw individual markers when
+        // there aren't too many - with a
+        // multi-year range there can be
+        // thousands of points, and drawing a
+        // circle for each would be slow and
+        // unreadable.
 
-            if (
-                index === 0
-            ) {
+        if (points.length <= 60) {
 
-                ctx.moveTo(
+            ctx.fillStyle = s.color;
+
+
+            points.forEach(point => {
+
+                ctx.beginPath();
+
+                ctx.arc(
                     point.x,
-                    point.y
+                    point.y,
+                    4,
+                    0,
+                    Math.PI * 2
                 );
 
-            } else {
+                ctx.fill();
 
-                ctx.lineTo(
-                    point.x,
-                    point.y
-                );
-
-            }
+            });
 
         }
-    );
 
 
-    ctx.strokeStyle =
-        primaryColor;
+        s._points = points;
 
-
-    ctx.lineWidth = 2.5;
-
-
-    ctx.stroke();
+    });
 
 
     // ====================================
-    // Draw Points
+    // Date Labels (thinned to avoid
+    // overlap on long ranges)
     // ====================================
 
-    ctx.fillStyle =
-        primaryColor;
+    const mainPoints =
+        series[0]._points;
 
 
-    points.forEach(
-        point => {
-
-            ctx.beginPath();
+    const maxLabels = 6;
 
 
-            ctx.arc(
-                point.x,
-                point.y,
-                4,
-                0,
-                Math.PI * 2
-            );
+    const labelStep =
+        Math.max(
+            1,
+            Math.ceil(
+                mainPoints.length /
+                maxLabels
+            )
+        );
 
-
-            ctx.fill();
-
-        }
-    );
-
-
-    // ====================================
-    // Date Labels
-    // ====================================
 
     ctx.fillStyle =
         secondaryColor;
@@ -837,8 +1138,23 @@ function drawPriceChart() {
         "center";
 
 
-    points.forEach(
-        point => {
+    mainPoints.forEach(
+        (point, index) => {
+
+            const isLast =
+                index ===
+                mainPoints.length - 1;
+
+
+            if (
+                index % labelStep !== 0 &&
+                !isLast
+            ) {
+
+                return;
+
+            }
+
 
             const date =
                 new Date(
@@ -851,7 +1167,12 @@ function drawPriceChart() {
                     "en-GB",
                     {
                         day: "2-digit",
-                        month: "short"
+                        month: "short",
+                        year:
+                            timeSpan >
+                            1000 * 60 * 60 * 24 * 400
+                                ? "2-digit"
+                                : undefined
                     }
                 );
 
@@ -859,12 +1180,303 @@ function drawPriceChart() {
             ctx.fillText(
                 label,
                 point.x,
-                height -
-                padding.bottom +
-                22
+                height - padding.bottom + 22
             );
 
         }
+    );
+
+}
+
+
+// ========================================
+// Draw Volume Chart
+// ========================================
+
+function drawVolumeChart() {
+
+    const canvas =
+        document.getElementById(
+            "volumeChart"
+        );
+
+
+    if (!canvas) {
+
+        return;
+
+    }
+
+
+    const companyPrices =
+        getPricesForPeriod();
+
+
+    const ctx =
+        canvas.getContext("2d");
+
+
+    if (
+        companyPrices.length === 0
+    ) {
+
+        ctx.clearRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        return;
+
+    }
+
+
+    const width =
+        canvas.clientWidth;
+
+
+    const height =
+        canvas.clientHeight;
+
+
+    if (
+        width === 0 ||
+        height === 0
+    ) {
+
+        return;
+
+    }
+
+
+    const ratio =
+        window.devicePixelRatio || 1;
+
+
+    canvas.width =
+        width * ratio;
+
+
+    canvas.height =
+        height * ratio;
+
+
+    ctx.setTransform(
+        ratio,
+        0,
+        0,
+        ratio,
+        0,
+        0
+    );
+
+
+    const padding = {
+
+        top: 10,
+
+        right: 25,
+
+        bottom: 20,
+
+        left: 60
+
+    };
+
+
+    const chartWidth =
+        width -
+        padding.left -
+        padding.right;
+
+
+    const chartHeight =
+        height -
+        padding.top -
+        padding.bottom;
+
+
+    const volumes =
+        companyPrices.map(
+            item =>
+                Number(item.volume) || 0
+        );
+
+
+    const maxVolume =
+        Math.max(
+            ...volumes,
+            1
+        );
+
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    const styles =
+        getComputedStyle(
+            document.documentElement
+        );
+
+
+    const secondaryColor =
+        styles
+            .getPropertyValue(
+                "--text-secondary"
+            )
+            .trim();
+
+
+    const primaryLight =
+        styles
+            .getPropertyValue(
+                "--primary-light"
+            )
+            .trim() || "#14B8A6";
+
+
+    // ===== Volume Label (max) =====
+
+    ctx.fillStyle =
+        secondaryColor;
+
+    ctx.font =
+        "11px sans-serif";
+
+    ctx.textAlign =
+        "right";
+
+    ctx.fillText(
+        formatVolume(maxVolume),
+        padding.left - 8,
+        padding.top + 10
+    );
+
+    ctx.fillText(
+        "0",
+        padding.left - 8,
+        padding.top + chartHeight
+    );
+
+
+    // ===== Bars =====
+    //
+    // Cap the number of bars actually drawn
+    // on very long ranges so bars stay
+    // visible rather than sub-pixel.
+
+    const maxBars = 250;
+
+    const step =
+        Math.max(
+            1,
+            Math.ceil(
+                companyPrices.length / maxBars
+            )
+        );
+
+    const sampledIndices = [];
+
+    for (
+        let i = 0;
+        i < companyPrices.length;
+        i += step
+    ) {
+
+        sampledIndices.push(i);
+
+    }
+
+
+    const barSlotWidth =
+        chartWidth /
+        sampledIndices.length;
+
+    const barWidth =
+        Math.max(
+            1,
+            barSlotWidth * 0.7
+        );
+
+
+    ctx.fillStyle =
+        primaryLight;
+
+
+    sampledIndices.forEach(
+        (dataIndex, slotIndex) => {
+
+            const volume =
+                Number(
+                    companyPrices[dataIndex]
+                        .volume
+                ) || 0;
+
+
+            const barHeight =
+                (volume / maxVolume) *
+                chartHeight;
+
+
+            const x =
+                padding.left +
+                slotIndex * barSlotWidth +
+                (barSlotWidth - barWidth) / 2;
+
+
+            const y =
+                padding.top +
+                chartHeight -
+                barHeight;
+
+
+            ctx.fillRect(
+                x,
+                y,
+                barWidth,
+                barHeight
+            );
+
+        }
+    );
+
+}
+
+
+// ========================================
+// Format Volume (compact: 1.2M, 340K)
+// ========================================
+
+function formatVolume(volume) {
+
+    if (volume >= 1000000) {
+
+        return (
+            (volume / 1000000).toFixed(1) +
+            "M"
+        );
+
+    }
+
+
+    if (volume >= 1000) {
+
+        return (
+            (volume / 1000).toFixed(1) +
+            "K"
+        );
+
+    }
+
+
+    return String(
+        Math.round(volume)
     );
 
 }
@@ -1208,6 +1820,289 @@ const yearRangePicker =
 
         }
     });
+
+
+// ========================================
+// Compare Companies
+// ========================================
+
+const MAX_COMPARE = 3;
+
+const compareSearchInput =
+    document.getElementById(
+        "compareSearch"
+    );
+
+const compareSuggestionsBox =
+    document.getElementById(
+        "compareSuggestions"
+    );
+
+const compareChipsBox =
+    document.getElementById(
+        "compareChips"
+    );
+
+
+function renderCompareChips() {
+
+    if (!compareChipsBox) {
+
+        return;
+
+    }
+
+
+    compareChipsBox.innerHTML = "";
+
+
+    compareTickers.forEach(
+        (ticker, index) => {
+
+            const company =
+                companies.find(
+                    c => c.ticker === ticker
+                );
+
+
+            const chip =
+                document.createElement(
+                    "span"
+                );
+
+            chip.className =
+                "compare-chip";
+
+            chip.style.borderColor =
+                COMPARE_COLORS[
+                    index %
+                    COMPARE_COLORS.length
+                ];
+
+
+            const label =
+                document.createElement(
+                    "span"
+                );
+
+            label.textContent =
+                company
+                    ? `${company.name} (${ticker})`
+                    : ticker;
+
+            chip.appendChild(label);
+
+
+            const removeButton =
+                document.createElement(
+                    "button"
+                );
+
+            removeButton.type = "button";
+
+            removeButton.textContent = "\u00d7";
+
+            removeButton.setAttribute(
+                "aria-label",
+                `Remove ${ticker} from comparison`
+            );
+
+            removeButton.addEventListener(
+                "click",
+                () => {
+
+                    compareTickers =
+                        compareTickers.filter(
+                            t => t !== ticker
+                        );
+
+                    renderCompareChips();
+
+                    drawPriceChart();
+
+                }
+            );
+
+            chip.appendChild(
+                removeButton
+            );
+
+
+            compareChipsBox.appendChild(
+                chip
+            );
+
+        }
+    );
+
+}
+
+
+function hideCompareSuggestions() {
+
+    if (compareSuggestionsBox) {
+
+        compareSuggestionsBox.hidden = true;
+
+        compareSuggestionsBox.innerHTML = "";
+
+    }
+
+}
+
+
+if (
+    compareSearchInput &&
+    compareSuggestionsBox
+) {
+
+    compareSearchInput.addEventListener(
+        "input",
+        () => {
+
+            const term =
+                compareSearchInput.value
+                    .trim()
+                    .toLowerCase();
+
+
+            if (!term) {
+
+                hideCompareSuggestions();
+
+                return;
+
+            }
+
+
+            if (
+                compareTickers.length >=
+                MAX_COMPARE
+            ) {
+
+                compareSuggestionsBox.hidden = false;
+
+                compareSuggestionsBox.innerHTML =
+                    `<div class="compare-suggestion-empty">Remove a company to add another (max ${MAX_COMPARE}).</div>`;
+
+                return;
+
+            }
+
+
+            const matches =
+                companies
+                    .filter(
+                        c =>
+                            c.ticker !==
+                                selectedCompany.ticker &&
+                            !compareTickers.includes(
+                                c.ticker
+                            ) &&
+                            (
+                                c.name
+                                    .toLowerCase()
+                                    .includes(term) ||
+                                c.ticker
+                                    .toLowerCase()
+                                    .includes(term)
+                            )
+                    )
+                    .slice(0, 6);
+
+
+            if (matches.length === 0) {
+
+                compareSuggestionsBox.hidden = false;
+
+                compareSuggestionsBox.innerHTML =
+                    `<div class="compare-suggestion-empty">No matches.</div>`;
+
+                return;
+
+            }
+
+
+            compareSuggestionsBox.hidden = false;
+
+            compareSuggestionsBox.innerHTML = "";
+
+
+            matches.forEach(company => {
+
+                const item =
+                    document.createElement(
+                        "button"
+                    );
+
+                item.type = "button";
+
+                item.className =
+                    "compare-suggestion-item";
+
+                item.textContent =
+                    `${company.name} (${company.ticker})`;
+
+
+                item.addEventListener(
+                    "click",
+                    () => {
+
+                        if (
+                            compareTickers.length <
+                            MAX_COMPARE
+                        ) {
+
+                            compareTickers.push(
+                                company.ticker
+                            );
+
+                        }
+
+
+                        compareSearchInput.value = "";
+
+                        hideCompareSuggestions();
+
+                        renderCompareChips();
+
+                        drawPriceChart();
+
+                    }
+                );
+
+
+                compareSuggestionsBox.appendChild(
+                    item
+                );
+
+            });
+
+        }
+    );
+
+
+    document.addEventListener(
+        "click",
+        event => {
+
+            if (
+                !compareSearchInput.contains(
+                    event.target
+                ) &&
+                !compareSuggestionsBox.contains(
+                    event.target
+                )
+            ) {
+
+                hideCompareSuggestions();
+
+            }
+
+        }
+    );
+
+}
 
 
 // ========================================

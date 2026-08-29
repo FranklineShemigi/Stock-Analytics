@@ -937,6 +937,169 @@
 }
 
 
+.volume-chart {
+
+    height: 120px;
+
+    margin-top: -8px;
+
+}
+
+
+/* ===== Compare Companies ===== */
+
+.compare-panel {
+
+    margin-top: var(--space-lg);
+
+    position: relative;
+
+}
+
+
+.compare-panel label {
+
+    display: block;
+
+    font-size: 0.85rem;
+
+    color: var(--text-secondary);
+
+    margin-bottom: 6px;
+
+}
+
+
+.compare-suggestions {
+
+    position: absolute;
+
+    z-index: 5;
+
+    top: 100%;
+
+    left: 0;
+
+    right: 0;
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-sm);
+
+    margin-top: 4px;
+
+    max-height: 220px;
+
+    overflow-y: auto;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+}
+
+
+.compare-suggestion-item {
+
+    display: block;
+
+    width: 100%;
+
+    text-align: left;
+
+    padding: 8px 12px;
+
+    border: none;
+
+    background: none;
+
+    cursor: pointer;
+
+    font-size: 0.9rem;
+
+    color: var(--text-primary);
+
+}
+
+
+.compare-suggestion-item:hover {
+
+    background: var(--background);
+
+}
+
+
+.compare-suggestion-empty {
+
+    padding: 8px 12px;
+
+    font-size: 0.85rem;
+
+    color: var(--text-secondary);
+
+}
+
+
+.compare-chips {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-top: 10px;
+
+}
+
+
+.compare-chip {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    border: 2px solid var(--border);
+
+    border-radius: 999px;
+
+    padding: 4px 6px 4px 12px;
+
+    font-size: 0.85rem;
+
+    background: var(--surface);
+
+}
+
+
+.compare-chip button {
+
+    border: none;
+
+    background: none;
+
+    cursor: pointer;
+
+    font-size: 1rem;
+
+    line-height: 1;
+
+    color: var(--text-secondary);
+
+    padding: 2px 6px;
+
+}
+
+
+.compare-chip button:hover {
+
+    color: var(--text-primary);
+
+}
+
+
 @media (max-width: 700px) {
 
     .company-chart {

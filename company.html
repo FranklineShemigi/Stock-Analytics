@@ -321,11 +321,50 @@
 
             </div>
 
+           <!-- ===== Compare Companies ===== -->
+
+            <div class="compare-panel">
+
+                <label for="compareSearch">
+                    Compare with
+                </label>
+
+                <input
+                    type="text"
+                    id="compareSearch"
+                    class="search-input"
+                    placeholder="Search a company to compare..."
+                    autocomplete="off"
+                >
+
+                <div
+                    id="compareSuggestions"
+                    class="compare-suggestions"
+                    hidden
+                ></div>
+
+                <div
+                    id="compareChips"
+                    class="compare-chips"
+                ></div>
+
+            </div>
+
+
            <!-- ===== Price chart ===== -->
             <div class="company-chart">
                 <canvas
                     id="priceChart"
                     aria-label= "Historical price chart"
+               > </canvas>
+            </div>
+
+
+            <!-- ===== Volume chart ===== -->
+            <div class="company-chart volume-chart">
+                <canvas
+                    id="volumeChart"
+                    aria-label="Trading volume chart"
                > </canvas>
             </div>
 

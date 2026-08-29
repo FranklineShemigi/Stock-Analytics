@@ -12,6 +12,8 @@ let selectedCompany = null;
 
 let currentPeriod = "1M";
 
+let customRange = null;
+
 
 // ========================================
 // Get Ticker From URL
@@ -194,10 +196,14 @@ function getCompanyPrices() {
 
 
 // ========================================
-// Get Period Start Date
+// Get Period Bounds (start/end dates)
 // ========================================
+//
+// Delegates to getPeriodBounds() in
+// performance.js so YTD / ALL / CUSTOM stay
+// in sync with the dashboard and sector page.
 
-function getPeriodStartDate(period) {
+function getPeriodRange(period) {
 
     const companyPrices =
         getCompanyPrices()
@@ -213,7 +219,10 @@ function getPeriodStartDate(period) {
         companyPrices.length === 0
     ) {
 
-        return null;
+        return {
+            startDate: null,
+            endDate: null
+        };
 
     }
 
@@ -226,83 +235,11 @@ function getPeriodStartDate(period) {
         );
 
 
-    const startDate =
-        new Date(latestDate);
-
-
-    switch (period) {
-
-        case "1D":
-
-            startDate.setDate(
-                latestDate.getDate() - 1
-            );
-
-            break;
-
-
-        case "1W":
-
-            startDate.setDate(
-                latestDate.getDate() - 7
-            );
-
-            break;
-
-
-        case "1M":
-
-            startDate.setMonth(
-                latestDate.getMonth() - 1
-            );
-
-            break;
-
-
-        case "3M":
-
-            startDate.setMonth(
-                latestDate.getMonth() - 3
-            );
-
-            break;
-
-
-        case "6M":
-
-            startDate.setMonth(
-                latestDate.getMonth() - 6
-            );
-
-            break;
-
-
-        case "1Y":
-
-            startDate.setFullYear(
-                latestDate.getFullYear() - 1
-            );
-
-            break;
-
-
-        case "5Y":
-
-            startDate.setFullYear(
-                latestDate.getFullYear() - 5
-            );
-
-            break;
-
-
-        default:
-
-            return null;
-
-    }
-
-
-    return startDate;
+    return getPeriodBounds(
+        latestDate,
+        period,
+        customRange
+    );
 
 }
 
@@ -332,23 +269,41 @@ function getPricesForPeriod() {
     }
 
 
-    const startDate =
-        getPeriodStartDate(
+    const { startDate, endDate } =
+        getPeriodRange(
             currentPeriod
         );
 
 
-    if (!startDate) {
-
-        return allCompanyPrices;
-
-    }
-
-
     return allCompanyPrices.filter(
-        item =>
-            new Date(item.date) >=
-            startDate
+        item => {
+
+            const itemDate =
+                new Date(item.date);
+
+            if (
+                startDate &&
+                itemDate < startDate
+            ) {
+
+                return false;
+
+            }
+
+
+            if (
+                endDate &&
+                itemDate > endDate
+            ) {
+
+                return false;
+
+            }
+
+
+            return true;
+
+        }
     );
 
 }
@@ -414,7 +369,8 @@ function updateCompanyAnalytics() {
         rankCompanies(
             [selectedCompany],
             prices,
-            currentPeriod
+            currentPeriod,
+            customRange
         );
 
 
@@ -1160,7 +1116,10 @@ function updatePeriodDisplay() {
     if (element) {
 
         element.textContent =
-            currentPeriod;
+            currentPeriod === "CUSTOM" &&
+            customRange
+                ? `${customRange.fromYear}-${customRange.toYear}`
+                : currentPeriod;
 
     }
 
@@ -1203,6 +1162,10 @@ periodButtons.forEach(
                 currentPeriod =
                     button.dataset.period;
 
+                customRange = null;
+
+                yearRangePicker.clearActive();
+
 
                 updatePeriodDisplay();
 
@@ -1213,6 +1176,38 @@ periodButtons.forEach(
 
     }
 );
+
+
+// ========================================
+// Custom Year Range
+// ========================================
+
+const yearRangePicker =
+    initYearRangePicker({
+        onApply: range => {
+
+            currentPeriod = "CUSTOM";
+
+            customRange = range;
+
+
+            periodButtons.forEach(
+                item => {
+
+                    item.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+
+            updatePeriodDisplay();
+
+            updateCompanyAnalytics();
+
+        }
+    });
 
 
 // ========================================

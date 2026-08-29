@@ -175,6 +175,111 @@
 }
 
 
+/* ===== Custom Year Range Picker ===== */
+
+.custom-range-toggle {
+
+    border: 1px dashed var(--border);
+
+    background: var(--surface);
+
+    color: var(--text-secondary);
+
+    border-radius: var(--radius-sm);
+
+    padding: 8px 14px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+
+}
+
+
+.custom-range-toggle:hover,
+.custom-range-toggle.active {
+
+    border-color: var(--primary);
+
+    color: var(--primary);
+
+}
+
+
+.custom-range-panel {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    align-items: center;
+
+    gap: var(--space-sm);
+
+    margin-bottom: var(--space-lg);
+
+    padding: var(--space-sm) var(--space-md);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-sm);
+
+    background: var(--surface);
+
+}
+
+
+.custom-range-panel label {
+
+    font-size: 0.85rem;
+
+    color: var(--text-secondary);
+
+}
+
+
+.custom-range-panel select {
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-sm);
+
+    padding: 6px 10px;
+
+    background: var(--surface);
+
+    color: var(--text-primary);
+
+}
+
+
+.apply-range-button {
+
+    border: 1px solid var(--primary);
+
+    background: var(--primary);
+
+    color: white;
+
+    border-radius: var(--radius-sm);
+
+    padding: 6px 14px;
+
+    cursor: pointer;
+
+}
+
+
+.apply-range-button:hover {
+
+    opacity: 0.9;
+
+}
+
+
 /* ===== Filters ===== */
 
 .market-filters {

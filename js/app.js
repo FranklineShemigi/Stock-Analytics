@@ -10,6 +10,8 @@ let prices = [];
 
 let currentPeriod = "1M";
 
+let customRange = null;
+
 let searchTerm = "";
 
 
@@ -330,7 +332,8 @@ function updateDashboard() {
         rankCompanies(
             getFilteredCompanies(),
             prices,
-            currentPeriod
+            currentPeriod,
+            customRange
         );
 
 
@@ -660,6 +663,10 @@ periodButtons.forEach(
                 currentPeriod =
                     button.dataset.period;
 
+                customRange = null;
+
+                yearRangePicker.clearActive();
+
 
                 updateDashboard();
 
@@ -668,6 +675,36 @@ periodButtons.forEach(
 
     }
 );
+
+
+// ========================================
+// Custom Year Range
+// ========================================
+
+const yearRangePicker =
+    initYearRangePicker({
+        onApply: range => {
+
+            currentPeriod = "CUSTOM";
+
+            customRange = range;
+
+
+            periodButtons.forEach(
+                item => {
+
+                    item.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+
+            updateDashboard();
+
+        }
+    });
 
 
 // ========================================

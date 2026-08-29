@@ -197,6 +197,59 @@
                     5Y
                 </button>
 
+                <button
+                    class="period-button"
+                    data-period="YTD"
+                >
+                    YTD
+                </button>
+
+                <button
+                    class="period-button"
+                    data-period="ALL"
+                >
+                    All
+                </button>
+
+                <button
+                    class="custom-range-toggle"
+                    id="customRangeToggle"
+                    type="button"
+                >
+                    Custom Range
+                </button>
+
+            </div>
+
+
+            <!-- ===== Custom Year Range ===== -->
+
+            <div
+                class="custom-range-panel"
+                id="customRangePanel"
+                hidden
+            >
+
+                <label for="fromYearSelect">
+                    From
+                </label>
+
+                <select id="fromYearSelect"></select>
+
+                <label for="toYearSelect">
+                    To
+                </label>
+
+                <select id="toYearSelect"></select>
+
+                <button
+                    class="apply-range-button"
+                    id="applyRangeButton"
+                    type="button"
+                >
+                    Apply
+                </button>
+
             </div>
 
 
@@ -233,6 +286,18 @@
             <!-- ===== Rankings ===== -->
 
             <div class="ranking-card">
+
+                <div class="ranking-toolbar">
+
+                    <input
+                        type="text"
+                        id="companySearch"
+                        class="search-input"
+                        placeholder="Search by name or ticker..."
+                        autocomplete="off"
+                    >
+
+                </div>
 
                 <div class="table-wrapper">
 
@@ -307,6 +372,8 @@
     <!-- ===== JavaScript ===== -->
 
     <script src="js/data-loader.js"></script>
+
+    <script src="js/year-range.js"></script>
 
     <script src="js/performance.js"></script>
 

@@ -63,11 +63,72 @@ function getPeriodStartDate(latestDate, period) {
             date.setFullYear(date.getFullYear() - 5);
             break;
 
+        case "YTD":
+            date.setMonth(0);
+            date.setDate(1);
+            break;
+
+        case "ALL":
+            return null;
+
         default:
             return null;
     }
 
     return date;
+}
+
+
+// ===== Get Period Start/End Bounds =====
+//
+// Wraps getPeriodStartDate to also support a
+// "CUSTOM" period bounded by calendar years, e.g.
+// { fromYear: 2015, toYear: 2020 }.
+//
+// Returns { startDate, endDate }. Either may be
+// null, meaning "no bound" (use earliest/latest
+// available price).
+
+function getPeriodBounds(latestDate, period, customRange) {
+
+    if (period === "CUSTOM" && customRange) {
+
+        const startDate =
+            new Date(
+                customRange.fromYear,
+                0,
+                1
+            );
+
+        const endDate =
+            new Date(
+                customRange.toYear,
+                11,
+                31,
+                23,
+                59,
+                59
+            );
+
+        return {
+            startDate,
+            endDate:
+                endDate > latestDate
+                    ? latestDate
+                    : endDate
+        };
+
+    }
+
+    return {
+        startDate:
+            getPeriodStartDate(
+                latestDate,
+                period
+            ),
+        endDate: latestDate
+    };
+
 }
 
 
@@ -105,7 +166,8 @@ function findClosestPrice(prices, targetDate) {
 function calculateCompanyPerformance(
     company,
     prices,
-    period = "1M"
+    period = "1M",
+    customRange = null
 ) {
 
     const companyPrices =
@@ -131,30 +193,71 @@ function calculateCompanyPerformance(
     }
 
 
-    // Latest available price
+    // Overall latest available price (used to
+    // anchor relative periods like "1M")
 
-    const latestPrice =
+    const overallLatest =
         companyPrices[
             companyPrices.length - 1
         ];
 
 
-    // Determine period start
+    // Determine period bounds
 
-    const targetDate =
-        getPeriodStartDate(
-            latestPrice.date,
-            period
+    const { startDate, endDate } =
+        getPeriodBounds(
+            new Date(overallLatest.date),
+            period,
+            customRange
         );
 
 
-    // Find closest historical price
+    // Restrict candidates to prices at or
+    // before the end bound
+
+    const pricesInRange =
+        endDate
+            ? companyPrices.filter(
+                price =>
+                    new Date(price.date) <=
+                    endDate
+            )
+            : companyPrices;
+
+
+    if (pricesInRange.length === 0) {
+
+        return {
+
+            ...company,
+
+            performance: 0,
+
+            startPrice: null,
+
+            currentPrice: null
+
+        };
+
+    }
+
+
+    const latestPrice =
+        pricesInRange[
+            pricesInRange.length - 1
+        ];
+
+
+    // Find closest historical price to the
+    // start bound (within the same range)
 
     const startingPrice =
-        findClosestPrice(
-            companyPrices,
-            targetDate
-        );
+        startDate
+            ? findClosestPrice(
+                pricesInRange,
+                startDate
+            )
+            : pricesInRange[0];
 
 
     if (!startingPrice) {
@@ -207,7 +310,8 @@ function calculateCompanyPerformance(
 function rankCompanies(
     companies,
     prices,
-    period = "1M"
+    period = "1M",
+    customRange = null
 ) {
 
     const results =
@@ -216,7 +320,8 @@ function rankCompanies(
             return calculateCompanyPerformance(
                 company,
                 prices,
-                period
+                period,
+                customRange
             );
 
         });
